@@ -1,90 +1,108 @@
-// Імпортуємо модулі та стилі
-import './js/pixabay-api.js';
-import './js/render-functions.js';
-
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import { searchImages } from './js/pixabay-api.js';
+import { displayImages, appendImages, initializeLightbox } from './js/render-functions.js';
 
-// Імпортуємо стилі та бібліотеку для індикації завантаження
-import 'nprogress/nprogress.css';
-import { fetchImages, GALLERY_LINK } from './js/pixabay-api';
-import { createGallery } from './js/render-functions';
-
-// Отримуємо посилання на контейнер галереї, форму пошуку та елементи інтерфейсу
 const galleryContainer = document.querySelector('.gallery');
-const searchForm = document.querySelector('.search-form');
-const loaderContainer = document.querySelector('.loader');
-const searchResultMessage = document.querySelector('.result-info');
+const loaderContainer = document.getElementById('loader');
+const searchForm = document.getElementById('search-form');
+const loadMoreBtn = document.getElementById('load-more');
+const loadingIndicator = document.getElementById('loading-indicator');
 
-// Додаємо обробник події для форми пошуку
-searchForm.addEventListener('submit', function (event) {
+loadMoreBtn.style.display = 'none';
+
+const apiKey = '42361434-dd35276d7c0a60f1c8ceb9714';
+let currentPage = 1;
+let currentQuery = '';
+let currentImagesCount = 0;
+let totalHits = 0;
+
+function toastSuccess(message) {
+    iziToast.success({
+        title: 'Success',
+        message: message,
+        position: 'topRight'
+    });
+}
+
+function toastError(message) {
+    iziToast.error({
+        title: 'Error',
+        message: message,
+        position: 'topRight'
+    });
+}
+
+function toggleLoadMoreBtn(show) {
+    loadMoreBtn.style.display = show ? 'block' : 'none';
+}
+
+function toggleLoader(show) {
+    loaderContainer.style.display = show ? 'block' : 'none';
+    loadingIndicator.style.display = show ? 'block' : 'none';
+}
+
+async function scrollToNextGroup() {
+    const cardHeight = galleryContainer.querySelector('.image-card').getBoundingClientRect().height;
+    window.scrollBy({
+        top: 2 * cardHeight,
+        left: 0,
+        behavior: 'smooth'
+    });
+}
+
+async function performSearch(query, page) {
+    try {
+        toggleLoader(true);
+        const images = await searchImages(query, page);
+        if (images.length > 0) {
+            if (page === 1) {
+                displayImages(galleryContainer, images);
+            } else {
+                appendImages(galleryContainer, images);
+            }
+            toastSuccess(`Was found: ${images.length} images`);
+            initializeLightbox();
+            if (images.length < 15) {
+                toastError('We are sorry, but you have reached the end of search results.');
+                toggleLoadMoreBtn(false);
+            } else {
+                toggleLoadMoreBtn(true);
+            }
+            scrollToNextGroup();
+        } else {
+            galleryContainer.innerHTML = '';
+            toastError(`Sorry, there are no images matching your search query "${query}". Please try again!`);
+            toggleLoadMoreBtn(false);
+        }
+    } finally {
+        toggleLoader(false);
+    }
+}
+
+searchForm.addEventListener('submit', async function (event) {
     event.preventDefault();
-    const queryInput = event.target.elements.query.value.trim(); // Вилучаємо пробіли з початку і кінця рядка
-
-    // Додаємо відображення індикатора завантаження перед відправленням запиту
-    loaderContainer.style.display = 'block';
-
-    // Валідація мінімальної довжини пошукового запиту
-    if (queryInput.length < 3) {
-        // Використовуємо iziToast для відображення повідомлення про невалідний ввід
-        iziToast.warning({
-            title: 'Warning',
-            message: 'Please enter a search query with at least 3 characters.',
-            position: 'topRight',
-        });
-        // Приховуємо індикатор завантаження у випадку невалідного вводу
-        loaderContainer.style.display = 'none';
+    toggleLoadMoreBtn(false);
+    const query = document.getElementById('query').value.trim();
+    if (!query) {
+        iziToast.warning({ title: 'Warning', message: 'Please enter a search query.' });
         return;
     }
+    currentQuery = query;
+    currentPage = 1;
+    await performSearch(query, currentPage);
+});
 
-    // Очищення HTML галереї перед новим пошуком
-    galleryContainer.innerHTML = '';
-    searchResultMessage.innerHTML = ''; // Очищення інформації про результат перед новим пошуком
-
-    // Ініціалізація SimpleLightbox тут, якщо потрібно, щоб гарантувати, що галерея буде готова до відображення
-    const lightbox = new SimpleLightbox(`.${GALLERY_LINK}`);
-
-    // Відправка запиту на сервер і обробка результату
-    fetchImages(queryInput)
-        .then(({ hits }) => {
-            // Після отримання результату приховуємо індикатор завантаження
-            loaderContainer.style.display = 'none';
-
-            if (hits.length > 0) {
-                // Виведення зображень в галерею
-                const galleryHTML = hits.map(createGallery).join('');
-                galleryContainer.innerHTML = galleryHTML;
-
-                // Виведення інформації про результат
-                searchResultMessage.innerHTML = `<p class="result-messages">${hits.length} images found for "${queryInput}"</p>`;
-
-                // Оновлення SimpleLightbox
-                lightbox.refresh();
-            } else {
-                // Відображення повідомлення про відсутність результатів
-                searchResultMessage.innerHTML = '<p class="no-results-message">No images found.</p>';
-            }
-
-            // Закриття інформації про результат через 5 секунд
-            setTimeout(() => {
-                searchResultMessage.innerHTML = '';
-            }, 5000);
-        })
-        .catch((error) => {
-            // Приховуємо індикатор завантаження у випадку помилки
-            loaderContainer.style.display = 'none';
-
-            console.error('Error fetching images:', error);
-
-            // Використання iziToast для відображення помилки користувачу
-            iziToast.error({
-                title: 'Error',
-                message: 'Error fetching images. Please try again.',
-                position: 'topRight',
-            });
-        })
-        .finally(() => {
-            // Приховання індикатора завантаження та очищення форми
-            searchForm.reset();
-        });
+loadMoreBtn.addEventListener('click', async function () {
+    try {
+        toggleLoader(true);
+        currentPage++;
+        await performSearch(currentQuery, currentPage);
+    } catch (error) {
+        toastError('Failed to fetch additional images.');
+    } finally {
+        toggleLoader(false);
+    }
 });

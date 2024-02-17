@@ -15,6 +15,7 @@
   "author": "Mykhailo Onipchenko <mihaonipchenko@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.6.7",
     "izitoast": "^1.4.0",
     "notiflix": "^3.2.7",
     "nprogress": "^0.2.0",

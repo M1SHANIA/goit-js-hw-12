@@ -2,32 +2,42 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Homework 12</title>
+    <link rel="stylesheet" href="./css/styles.css" />
     <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/notiflix@2.7.0/dist/notiflix.min.css"
-    />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Montserrat:wght@400;500;600&display=swap"
+      href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css"
       rel="stylesheet"
     />
-    <link href="./css/styles.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.10.3/simple-lightbox.min.css"
+      rel="stylesheet"
+    />
   </head>
-
   <body>
-    <form action="#" method="get" class="search-form">
-      <input type="text" id="query" class="image-query" />
-      <button type="submit" class="search-button">Search</button>
-    </form>
-    <div class="loader"></div>
-    <div class="result-info"></div>
-    <div id="gallery" class="gallery">
-      <span class="loader"></span>
+    <div class="search-container">
+      <form id="search-form" class="search-form">
+        <input
+          type="text"
+          id="query"
+          class="image-query"
+          placeholder="Enter your search query..."
+          required
+        />
+        <button type="submit">Search</button>
+      </form>
+      <div id="loader" class="loader"></div>
     </div>
+    <div id="gallery" class="gallery"></div>
+
+    <div id="load-more-container">
+      <button id="load-more">Load more</button>
+      <div id="loading-indicator" style="display: none">Loading...</div>
+    </div>
+
     <script type="module" src="./main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.10.3/simple-lightbox.min.js"></script>
   </body>
 </html>
