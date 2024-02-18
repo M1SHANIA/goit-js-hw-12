@@ -4,44 +4,24 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Homework 12</title>
+    <title>Document</title>
     
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.10.3/simple-lightbox.min.css"
-      rel="stylesheet"
-    />
     <script type="module" crossorigin src="/goit-js-hw-12/commonHelpers.js"></script>
-    <link rel="modulepreload" crossorigin href="/goit-js-hw-12/assets/vendor-22aaac4a.js">
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-12/assets/vendor-64b55ca9.js">
     <link rel="stylesheet" href="/goit-js-hw-12/assets/vendor-cf6910df.css">
-    <link rel="stylesheet" href="/goit-js-hw-12/assets/index-bb728b69.css">
+    <link rel="stylesheet" href="/goit-js-hw-12/assets/index-6d9685b5.css">
   </head>
   <body>
-    <div class="search-container">
-      <form id="search-form" class="search-form">
-        <input
-          type="text"
-          id="query"
-          class="image-query"
-          placeholder="Enter your search query..."
-          required
-        />
-        <button type="submit">Search</button>
-      </form>
-      <div id="loader" class="loader"></div>
-    </div>
-    <div id="gallery" class="gallery"></div>
+    <form class="search-form">
+      <input type="text" name="text" placeholder="Search images..." />
+      <button type="submit">Search</button>
+    </form>
 
-    <div id="load-more-container">
-      <button id="load-more">Load more</button>
-      <div id="loading-indicator" style="display: none">Loading...</div>
-    </div>
+    <span class="loader" style="display: none"></span>
+    <ul class="gallery"></ul>
+    <button type="button" class="loadBtn">Load more</button>
+    <span class="loader moreLoader" style="display: none"></span>
 
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.10.3/simple-lightbox.min.js"></script>
   </body>
 </html>
